@@ -21,6 +21,38 @@ exports.postaddUser = async (req,res,next)=>{
     } 
 };
 
+exports.updateUser = async(req,res,next)=>{
+    try{
+        const userId = req.params.id;
+        if(!userId){
+            throw new Error('userId is required for updating the user');
+        }
+        //grab all the values
+        const name = req.body.name;
+        const email = req.body.email;
+        const phone = req.body.phone;
+        // find the user by id...
+        const user = await User.findByPk(userId);
+
+        if (!user) {
+          return res.status(404).json({ error: 'User not found' });
+        }
+    
+        // Update the user's information
+        user.name = name;
+        user.email = email;
+        user.phone = phone;
+    
+        // Save the updated user
+        await user.save();
+
+        res.status(200).json({ updatedUserDetails: user });
+      } catch (err) {
+        console.log('Error while updating user:', err);
+        res.status(500).json({ error: err.message });
+      }
+}
+
 exports.deleteUser = async (req,res,next)=>{
     try{
         if(req.params.id === 'undefined'){
